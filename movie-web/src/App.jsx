@@ -5,7 +5,16 @@ import './App.css'
 
  const App = () => {
   return(
-    <h1>movies to you</h1>
+     <main>
+      <div /> 
+
+      <div className='wrapper'>
+        <header>
+          <img  />
+          <h1> Experience Magic of Cinema</h1>
+        </header>
+      </div>
+     </main>
   )
  }
 
