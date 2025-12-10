@@ -1,10 +1,40 @@
-import { useState } from 'react'
+import { useState , useEffect} from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Search from './componets/search.jsx'
+
+
+const API_BASE_URL = 'https://api.themoviedb.org/3';
+
+const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
+
+const API_OPTIONS = {
+  method: 'GET',
+  headers: {
+    accept: 'application/json',
+    Authorization: `Bearer ${API_KEY}`
+  }
+}
+
+const getMovies = async (query) => {
+
+  try{} catch(error){
+    console.error('Error fetching movies:', error);
+  }
+
+}
+
  const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
+
+  useEffect( () => {
+    console.log(import.meta.env.VITE_TMDB_API_KEY);
+  }, [])
+
+
+
+
   return(
      <main>
       <div className='pattern'  /> 
@@ -18,7 +48,7 @@ import Search from './componets/search.jsx'
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
- 
+        
       </div>
      </main>
   )
