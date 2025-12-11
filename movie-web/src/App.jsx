@@ -1,8 +1,10 @@
 import { useState , useEffect} from 'react'
+import { useDebounce } from 'react-use'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Search from './componets/search.jsx'
+import Card from './componets/card.jsx'
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -17,38 +19,53 @@ const API_OPTIONS = {
   }
 }
 
-const getMovies = async (query) => {
-
-  try{
-
-    const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
-
-    const response = await fetch(endpoint, API_OPTIONS);
-    const data = await response.json();
-    console.log(data);
-    
-    if(data.response ==='false'){
-      console.log('No movies found');
-      setMovieList([]);
-    }
-
-    setMovieList(data.results);
-
-  } catch(error){
-    console.error('Error fetching movies:', error);
-  }
-
-}
-
  const App = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [MovieList, setMovieList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+
+  const getMovies = async (query) => {
+    setIsLoading(true);
+
+    try{
+      const endpoint = query ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+                             : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+
+      const response = await fetch(endpoint, API_OPTIONS);
+
+      if(!response.ok) {
+        throw new Error('Failed to fetch movies');
+      }
+
+      const data = await response.json();
+      console.log('API Response:', data);
+
+      if(data.results && data.results.length > 0){
+        setMovieList(data.results);
+      } else {
+        console.log('No movies found');
+        setMovieList([]);
+      }
+
+    } catch(error){
+      console.error('Error fetching movies:', error);
+      setMovieList([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    console.log('Component mounted, fetching movies...');
+    getMovies(debouncedSearchTerm);
+  }, [debouncedSearchTerm]);
 
 
-  useEffect( () => {
-    console.log(import.meta.env.VITE_TMDB_API_KEY);
-  }, [])
+ 
 
 
 
@@ -66,6 +83,22 @@ const getMovies = async (query) => {
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
+        <section className='movie-list'> 
+          {isLoading ? (
+            <p>Loading movies...</p>
+          ):
+          ( <>
+             <section className='all-movies'>
+            <ul>
+              {MovieList.map((movie) => (
+                <Card key={movie.id} movie={movie} />
+              ))} 
+            </ul>
+          </section>
+            </>
+          )}
+        </section>
         
       </div>
      </main>
