@@ -19,14 +19,32 @@ const API_OPTIONS = {
 
 const getMovies = async (query) => {
 
-  try{} catch(error){
+  try{
+
+    const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+
+    const response = await fetch(endpoint, API_OPTIONS);
+    const data = await response.json();
+    console.log(data);
+    
+    if(data.response ==='false'){
+      console.log('No movies found');
+      setMovieList([]);
+    }
+
+    setMovieList(data.results);
+
+  } catch(error){
     console.error('Error fetching movies:', error);
   }
 
 }
 
  const App = () => {
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [MovieList, setMovieList] = useState([]);
+
 
   useEffect( () => {
     console.log(import.meta.env.VITE_TMDB_API_KEY);
