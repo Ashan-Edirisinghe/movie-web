@@ -51,7 +51,7 @@ router.put('/count/:movieId', async (req, res) => {
 );   
 
 
-router.get('/:movieTitle', async (req, res) => {
+router.get('/find/:movieTitle', async (req, res) => {
      
     const movieTitle = req.params.movieTitle;
     try{
