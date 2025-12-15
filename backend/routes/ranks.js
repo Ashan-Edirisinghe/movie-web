@@ -79,8 +79,8 @@ router.get('/find/:movieTitle', async (req, res) => {
 
 router.get('/top', async (req, res) => {
     try{
-        const topRanks = await Rank.find().sort({ count: -1 }).limit(5);
-        
+        const topRanks = await Rank.find().sort({ count: -1 }).limit(4);
+
         if(!topRanks){
             return res.status(404).json({ message: 'No ranks found' });
         }

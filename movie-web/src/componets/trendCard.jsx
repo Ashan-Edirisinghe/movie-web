@@ -1,25 +1,22 @@
-import react from 'react';
+import React from 'react';
 
-const Card = ({ movie:
-    { title,poster_path }
- }) => {
+const TrendCard = ({ movie }) => {
 
-return (
-     <div className="movie-card">
+  return (
+    <div className="movie-card">
       <img
-        src={poster_path ?
-          `https://image.tmdb.org/t/p/w500/${poster_path}` : '/no-movie.png'}
-        alt={title}
+        src={movie.movieImg ?
+          `https://image.tmdb.org/t/p/w200${movie.movieImg}` : '/no-movie.png'}
+        alt={movie.movieTitle}
+        style={{ width: '150px', height: 'auto' }}
       />
 
       <div className="mt-4">
-        
-        <h3>{title}</h3>
-          
+        <h3>{movie.movieTitle}</h3>
+        <p className="text-sm">Searches: {movie.count}</p>
       </div>
     </div>
-)
-
+  )
 }
 
-export default Card;
+export default TrendCard;

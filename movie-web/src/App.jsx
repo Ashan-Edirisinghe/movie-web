@@ -5,7 +5,7 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Search from './componets/search.jsx'
 import Card from './componets/card.jsx'
-import trendCard from './componets/trendCard.jsx'
+import TrendCard from './componets/trendCard.jsx'
 import { addRank, findMovieByTitle, updateRankCount, getTopRanks } from './api/ranks.js'
  
 
@@ -65,6 +65,27 @@ const API_OPTIONS = {
       setIsLoading(false);
     }
   }
+
+  /* Ranking card function*/
+   const getTrends = async () => {
+    try{
+      console.log('Fetching top trends...');
+      const topRanks = await getTopRanks();
+      console.log('Top ranks received:', topRanks);
+      
+      if(topRanks && topRanks.length > 0) {
+        setRankedMovie(topRanks);
+        console.log('Ranked movies set:', topRanks.length);
+      } else {
+        console.log('No ranked movies found');
+        setRankedMovie([]);
+      }
+
+    }catch(err){
+      console.error('Error fetching top ranks:', err);
+      setRankedMovie([]);
+    }
+   }
  
    /* ranking movies */
  const rankingMovies = async (Movie) => {
@@ -77,8 +98,9 @@ const API_OPTIONS = {
         movieImg: Movie.poster_path,
         count: 1
       });
-      console.log('Added new movie to ranks:', addMovie);
 
+      console.log('Added new movie to ranks:', addMovie);
+        
      
     }else{
       const newCount = foundMovie.count + 1;
@@ -98,6 +120,7 @@ const API_OPTIONS = {
   useEffect(() => {
     console.log('Component mounted, fetching movies...');
     getMovies(debouncedSearchTerm);
+    getTrends();
   }, [debouncedSearchTerm]);
 
 
@@ -122,14 +145,26 @@ const API_OPTIONS = {
 
          
         <section className='movie-list'>
-          { 
-               rankedMovie.map((movie)=>( 
-            <trendCard  key={movie.id} movie={movie}/>
-               ) )
-          }
+          <h2>Trending Searches</h2>
+          {!rankedMovie ? (
+            <p>Loading trends...</p>
+          ) : rankedMovie.length === 0 ? (
+            <p>No trending movies yet. Search for some movies!</p>
+          ) : (
+            <section className='all-movies'>
+              <ul> 
+                            {rankedMovie.map((movie)=>( 
+              <TrendCard key={movie._id} movie={movie} />
+            ))}
+
+            </ul>
+            </section>
+
+          )}
         </section>
 
         <section className='movie-list'> 
+          <h2>All Movies</h2>
           {isLoading ? (
             <p>Loading movies...</p>
           ):
