@@ -68,3 +68,19 @@ export const findMovieByTitle = async (movieTitle) => {
     throw error;
   }
 };
+
+
+export const getTopRanks = async (limit = 5) => {
+  try {
+    const response = await fetch(`${API_URL}/ranks/top/${limit}`);
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch top ranks');
+    }
+
+    return await response.json();
+  }catch (error) {
+    console.error('Error fetching top ranks:', error);
+    throw error;
+  }
+}
