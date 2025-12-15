@@ -5,6 +5,8 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Search from './componets/search.jsx'
 import Card from './componets/card.jsx'
+import { addRank, findMovieByTitle, updateRankCount } from './api/ranks.js'
+ 
 
 
 const API_BASE_URL = 'https://api.themoviedb.org/3';
@@ -26,7 +28,7 @@ const API_OPTIONS = {
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
 
-    useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm])
+    useDebounce(() => setDebouncedSearchTerm(searchTerm), 2000, [searchTerm])
 
   const getMovies = async (query) => {
     setIsLoading(true);
@@ -46,6 +48,9 @@ const API_OPTIONS = {
 
       if(data.results && data.results.length > 0){
         setMovieList(data.results);
+        if(query){ 
+        rankingMovies(data.results[0]);
+        }
       } else {
         console.log('No movies found');
         setMovieList([]);
@@ -58,6 +63,35 @@ const API_OPTIONS = {
       setIsLoading(false);
     }
   }
+ 
+   /* ranking movies */
+ const rankingMovies = async (Movie) => {
+   try{
+    const foundMovie = await findMovieByTitle(Movie.title);
+    if(!foundMovie){
+     const addMovie = await addRank({
+        movieTitle: Movie.title,
+        movieId: Movie.id,
+        movieImg: Movie.poster_path,
+        count: 1
+      });
+      console.log('Added new movie to ranks:', addMovie);
+
+     
+    }else{
+      const newCount = foundMovie.count + 1;
+      console.log('Updating movie:', foundMovie.movieId, 'to count:', newCount);
+      
+      const updated = await updateRankCount(foundMovie.movieId, newCount);
+      console.log('Updated movie count:', updated);
+    } 
+
+   }catch(err){
+     console.error('Ranking error:', err);
+   }
+
+ }
+
 
   useEffect(() => {
     console.log('Component mounted, fetching movies...');
@@ -83,6 +117,14 @@ const API_OPTIONS = {
 
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
+
+         
+        <section className='movie-list'>
+
+           
+
+
+        </section>
 
         <section className='movie-list'> 
           {isLoading ? (
