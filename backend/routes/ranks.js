@@ -23,27 +23,32 @@ router.post('/add', async (req, res) => {
 router.put('/count/:movieId', async (req, res) => {
 
      const movieId = req.params.movieId;
-     const update = req.body;
+     const { count } = req.body;
+
+     console.log('Update request - movieId:', movieId, 'new count:', count);
 
      try{
 
        const updated = await Rank.findOneAndUpdate(
-        movieId,
-        update,
+        { movieId: movieId },
+        { $set: { count: count } },
         {
             new: true
         }
         );
 
+        console.log('Update result:', updated);
+
         if(!updated){
-            return res.status(404).json({ message: 'count not found' });
+            console.log('Movie not found in database');
+            return res.status(404).json({ message: 'Movie not found' });
         }
 
         res.status(200).json(updated);
  
      }catch(err){
-        console.log(err);
-        res.status(500).json({ message: 'Server Error' });
+        console.error('Update error:', err);
+        res.status(500).json({ message: 'Server Error', error: err.message });
     }
 
 
