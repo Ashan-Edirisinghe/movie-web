@@ -5,7 +5,8 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Search from './componets/search.jsx'
 import Card from './componets/card.jsx'
-import { addRank, findMovieByTitle, updateRankCount } from './api/ranks.js'
+import trendCard from './componets/trendCard.jsx'
+import { addRank, findMovieByTitle, updateRankCount, getTopRanks } from './api/ranks.js'
  
 
 
@@ -27,6 +28,7 @@ const API_OPTIONS = {
   const [MovieList, setMovieList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState(searchTerm);
+  const [rankedMovie, setRankedMovie] = useState(null);
 
     useDebounce(() => setDebouncedSearchTerm(searchTerm), 2000, [searchTerm])
 
@@ -81,7 +83,7 @@ const API_OPTIONS = {
     }else{
       const newCount = foundMovie.count + 1;
       console.log('Updating movie:', foundMovie.movieId, 'to count:', newCount);
-      
+
       const updated = await updateRankCount(foundMovie.movieId, newCount);
       console.log('Updated movie count:', updated);
     } 
@@ -120,10 +122,11 @@ const API_OPTIONS = {
 
          
         <section className='movie-list'>
-
-           
-
-
+          { 
+               rankedMovie.map((movie)=>( 
+            <trendCard  key={movie.id} movie={movie}/>
+               ) )
+          }
         </section>
 
         <section className='movie-list'> 
