@@ -75,6 +75,22 @@ router.get('/find/:movieTitle', async (req, res) => {
     }
 
 });
+
+
+router.get('/top', async (req, res) => {
+    try{
+        const topRanks = await Rank.find().sort({ count: -1 }).limit(5);
+        
+        if(!topRanks){
+            return res.status(404).json({ message: 'No ranks found' });
+        }
+
+        res.status(200).json(topRanks);
+    }catch(err){
+        console.log(err);
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
  
 
 module.exports = router;    
